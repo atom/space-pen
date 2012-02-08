@@ -145,6 +145,7 @@ class Builder
       view.find("div##{subviewId}").replaceWith(subview)
 
   extractOptions: (args) ->
+    @processSelectors args
     options = {}
     for arg in args
       type = typeof(arg)
@@ -155,6 +156,26 @@ class Builder
       else
         options.attributes = arg
     options
+    
+  processSelectors: (args) ->
+    if typeof args[0] is "string" and args.length > 1
+      selectorString = args.shift()
+      idPattern    = /#([a-zA-Z]*)/g
+      classPattern = /\.([a-zA-Z]*)/g
+      selectors = {}
+      classString = $.trim selectorString.replace(idPattern,    "")
+                                         .replace(classPattern, " $1 ")
+      idString    = $.trim selectorString.replace(classPattern, "")
+                                         .replace(idPattern,    " $1 ")
+      selectors.class = classString if classString
+      selecors.id     = idString    if idString  
+      noAttrs = true
+      for arg in args
+        if typeof arg is "object" #attributes list exists
+          noAttrs = false
+          arg.id = selectors.id
+          arg.class = selectors.class
+      args.push selectors if noAttrs
 
 jQuery.fn.view = -> this.data('view')
 

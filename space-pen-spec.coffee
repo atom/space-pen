@@ -11,15 +11,15 @@ describe "View", ->
 
       TestView = class extends View
         @content: (attrs) ->
-          @div keydown: 'viewClicked', class: 'rootDiv', =>
+          @div '.rootDiv', keydown: 'viewClicked',  =>
             @h1 { outlet: 'header' }, attrs.title
             @list()
             @subview 'subview', new Subview(title: "Subview")
 
         @list: ->
           @ol =>
-            @li outlet: 'li1', click: 'li1Clicked', class: 'foo', "one"
-            @li outlet: 'li2', keypress:'li2Keypressed', class: 'bar', "two"
+            @li '.foo', outlet: 'li1', click:    'li1Clicked',  "one"
+            @li '.bar', outlet: 'li2', keypress: 'li2Keypressed',  "two"
 
         initialize: (params) ->
           @initializeCalledWith = params
