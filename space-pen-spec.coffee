@@ -15,6 +15,10 @@ describe "View", ->
             @h1 { outlet: 'header' }, attrs.title
             @list()
             @subview 'subview', new Subview(title: "Subview")
+            @div '.treated-as-content'
+            @div '.first-class#then-id', "w/content"
+            @div '#first-id.then-class', "w/content"
+            @div '#w-attrs', { 'with-attr': 'test' }
 
         @list: ->
           @ol =>
@@ -89,6 +93,18 @@ describe "View", ->
         expect(view.header.view()).toBe view
         expect(view.subview.view()).toBe view.subview
         expect(view.subview.header.view()).toBe view.subview
+
+      it "renders one and only one string argument as content", ->
+        console.log view.find('div')
+        console.log view.find(":contains(.treated-as-content)")
+        expect(view.find(":contains(.treated-as-content)")).toExist()
+
+      it "renders an element with appropriate class and id if the first argument is a selector", ->
+        expect(view.find(".first-class#then-id")).toHaveText("w/content")
+        expect(view.find("#first-id.then-class")).toHaveText("w/content")
+
+      it "renders an element with appropriate class and id if the first argument is a selector and the second is a hash of attributes", ->
+        expect(view.find("#w-attrs[with-attr='test']")).toExist()
 
     describe "when a view is inserted within another element with jquery", ->
       [attachHandler, subviewAttachHandler] = []
