@@ -13,7 +13,7 @@ voidElements =
    source track wbr'.split /\s+/
 
 events =
-  'blur change click dblclick error focus input keydown
+  'blur change click dblclick error focus focusout focusin input keydown
    keypress keyup load mousedown mousemove mouseout mouseover
    mouseup resize scroll select submit unload'.split /\s+/
 
