@@ -58,8 +58,7 @@ class View extends jQuery
     @constructor = jQuery # sadly, jQuery assumes this.constructor == jQuery in pushStack
     @wireOutlets(this)
     @bindEventHandlers(this)
-    @find('*').andSelf().data('view', this)
-    @attr('triggerAttachEvents', true)
+    @find('*').andSelf().data('view', this).data('spTriggerAttachEvent', true)
     step(this) for step in postProcessingSteps
     @initialize?(params)
 
@@ -158,8 +157,8 @@ jQuery.fn.view = -> this.data('view')
 
 # Trigger attach event when views are added to the DOM
 triggerAttachEvent = (element) ->
-  if element.attr?('triggerAttachEvents') and element.parents('html').length
-    element.find('[triggerAttachEvents]').add(element).trigger('attach')
+  if element?.data?('spTriggerAttachEvent') and element.parents('html').length
+    element.find('*').andSelf().filter(-> $(this).data('spTriggerAttachEvent')).trigger('attach')
 
 for methodName in ['append', 'prepend', 'after', 'before']
   do (methodName) ->
