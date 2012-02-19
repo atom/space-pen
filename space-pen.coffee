@@ -171,7 +171,7 @@ class Builder
     options
     
   processSelector: (args) ->
-    if args.length > 1 and typeof args[0] is "string"
+    if args.length > 1 and typeof args[0] is "string" and /^[\.#]/.test args[0]
       selectorStr = args.shift()
       attrs = {}
 

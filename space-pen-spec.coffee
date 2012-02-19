@@ -19,8 +19,8 @@ describe "View", ->
             @div "#first-id.then_class", "w/other content"
             @div "#id", "w/content", data: "and attrs"
             @div "#id", data: "w/attrs", "and content"
-            @div ".B&W?", "w/content"
             @div ".treated-as#content"
+            @div "also-treated-as#content", data: "test"
             @div "#first-id#second-id", "w/content"
             @div ".1bad-identifier#-2bad-identifier", "w/content"
 
@@ -98,12 +98,17 @@ describe "View", ->
         expect(view.subview.view()).toBe view.subview
         expect(view.subview.header.view()).toBe view.subview
 
+      it "renders content when the first argument doesn't start with '.' or '#'", ->
+        expect(view.find("also-treated-as#content")).not.toExist()
+        expect(view.find("[data='test']:contains(also-treated-as#content)")).toExist()
+
       describe "when the first argument is a selector", ->
         it "renders an element with appropriate class and id", ->
           expect(view.find(".first1class#then-id")).toHaveText("w/content")
           expect(view.find("#first-id.then_class")).toHaveText("w/other content")
 
         it "renders the selector as content when it is the only argument", ->
+          expect(view.find(".treated-as#content")).not.toExist()
           expect(view.find(":contains(.treated-as#content)")).toExist()
 
         it "only renders one id", ->
