@@ -19,6 +19,19 @@ events =
 
 idCounter = 0
 
+# From http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers
+# and http://www.w3.org/TR/CSS21/grammar.html#scanner
+h = "[0-9a-fA-F]"
+nonascii = "[\\240-\\377]"
+unicode = "\\\\#{h}{1,6}(\\r\\n|[ \\t\\r\\n\\f])?"
+escape = "(#{unicode}|\\\\[^\\r\\n\\f0-9a-fA-F])"
+nmchar = "([_a-zA-Z0-9-]|#{nonascii}|#{escape})"
+nmstart = "([_a-zA-Z]|#{nonascii}|#{escape})"
+ident = "-?#{nmstart}#{nmchar}*"
+
+idExp = new RegExp("##{ident}")
+classExp = new RegExp("\\.#{ident}", "g")
+
 class View extends jQuery
   @builderStack: []
 
@@ -145,7 +158,7 @@ class Builder
       view.find("div##{subviewId}").replaceWith(subview)
 
   extractOptions: (args) ->
-    @processSelectors args
+    @processSelector args
     options = {}
     for arg in args
       type = typeof(arg)
@@ -157,25 +170,26 @@ class Builder
         options.attributes = arg
     options
     
-  processSelectors: (args) ->
-    if typeof args[0] is "string" and args.length > 1
-      selectorString = args.shift()
-      idPattern    = /#([a-zA-Z\-]*)/g
-      classPattern = /\.([a-zA-Z\-]*)/g
-      selectors = {}
-      classString = $.trim selectorString.replace(idPattern,    "")
-                                         .replace(classPattern, " $1 ")
-      idString    = $.trim selectorString.replace(classPattern, "")
-                                         .replace(idPattern,    " $1 ")
-      selectors.class = classString if classString
-      selectors.id     = idString    if idString
-      noAttrs = true
+  processSelector: (args) ->
+    if args.length > 1 and typeof args[0] is "string"
+      selectorStr = args.shift()
+      attrs = {}
+
+      id = selectorStr.match idExp
+      classes = selectorStr.match classExp
+
+      attrs.class = (klass.substr(1) for klass in classes).join(" ") if classes
+      attrs.id = id[0].substr(1) if id
+
+      userDefinedAttrs = false
+
       for arg in args
-        if typeof arg is "object" #attributes list exists
-          noAttrs = false
-          arg.id = selectors.id
-          arg.class = selectors.class
-      args.push selectors if noAttrs
+        if typeof arg is "object"
+          userDefinedAttrs = true
+          arg.id = attrs.id
+          arg.class = attrs.class
+
+      args.push attrs unless userDefinedAttrs
 
 jQuery.fn.view = -> this.data('view')
 
