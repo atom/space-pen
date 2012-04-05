@@ -15,6 +15,14 @@ describe "View", ->
             @h1 { outlet: 'header' }, attrs.title
             @list()
             @subview 'subview', new Subview(title: "Subview")
+            @div ".first1class#then-id", "w/content"
+            @div "#first-id.then_class", "w/other content"
+            @div "#id", "w/content", data: "and attrs"
+            @div "#id", data: "w/attrs", "and content"
+            @div ".treated-as#content"
+            @div "also-treated-as#content", data: "test"
+            @div "#first-id#second-id", "w/content"
+            @div ".1bad-identifier#-2bad-identifier", "w/content"
 
         @list: ->
           @ol =>
@@ -90,6 +98,33 @@ describe "View", ->
         expect(view.subview.view()).toBe view.subview
         expect(view.subview.header.view()).toBe view.subview
 
+      it "renders content when the first argument doesn't start with '.' or '#'", ->
+        expect(view.find("also-treated-as#content")).not.toExist()
+        expect(view.find("[data='test']:contains(also-treated-as#content)")).toExist()
+
+      describe "when the first argument is a selector", ->
+        it "renders an element with appropriate class and id", ->
+          expect(view.find(".first1class#then-id")).toHaveText("w/content")
+          expect(view.find("#first-id.then_class")).toHaveText("w/other content")
+
+        it "renders the selector as content when it is the only argument", ->
+          expect(view.find(".treated-as#content")).not.toExist()
+          expect(view.find(":contains(.treated-as#content)")).toExist()
+
+        it "only renders one id", ->
+          expect(view.find("#first-id")).toExist()
+          expect(view.find("#second-id")).not.toExist()
+
+        it "doesn't render bad identifiers", ->
+          expect(view.html().match(/1bad-identifier/)).toBeNull()
+          expect(view.find(".1bad-identifier")).not.toExist();
+          expect(view.html().match(/-2bad-identifier/)).toBeNull()
+          expect(view.find("#-2bad-identifier")).not.toExist();
+
+        it "renders attributes and content properly", ->
+          expect(view.find("#id[data='and attrs']")).toHaveText("w/content")
+          expect(view.find("#id[data='w/attrs']")).toHaveText("and content")
+
     describe "when a view is inserted within another element with jquery", ->
       [attachHandler, subviewAttachHandler] = []
 
@@ -147,4 +182,3 @@ describe "View", ->
 
       expect(fragment.find('div#subview')).toExist()
       expect(fragment.foo).toMatchSelector('#subview')
-

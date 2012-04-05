@@ -13,11 +13,24 @@ voidElements =
    source track wbr'.split /\s+/
 
 events =
-  'blur change click dblclick error focus input keydown
+  'blur change click dblclick error focus focusout focusin input keydown
    keypress keyup load mousedown mousemove mouseout mouseover
    mouseup resize scroll select submit unload'.split /\s+/
 
 idCounter = 0
+
+# From http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers
+# and http://www.w3.org/TR/CSS21/grammar.html#scanner
+h = "[0-9a-fA-F]"
+nonascii = "[\\240-\\377]"
+unicode = "\\\\#{h}{1,6}(\\r\\n|[ \\t\\r\\n\\f])?"
+escape = "(#{unicode}|\\\\[^\\r\\n\\f0-9a-fA-F])"
+nmchar = "([_a-zA-Z0-9-]|#{nonascii}|#{escape})"
+nmstart = "([_a-zA-Z]|#{nonascii}|#{escape})"
+ident = "-?#{nmstart}#{nmchar}*"
+
+idExp = new RegExp("##{ident}")
+classExp = new RegExp("\\.#{ident}", "g")
 
 class View extends jQuery
   @builderStack: []
@@ -145,6 +158,7 @@ class Builder
       view.find("div##{subviewId}").replaceWith(subview)
 
   extractOptions: (args) ->
+    @processSelector args
     options = {}
     for arg in args
       type = typeof(arg)
@@ -155,6 +169,27 @@ class Builder
       else
         options.attributes = arg
     options
+    
+  processSelector: (args) ->
+    if args.length > 1 and typeof args[0] is "string" and /^[\.#]/.test args[0]
+      selectorStr = args.shift()
+      attrs = {}
+
+      id = selectorStr.match idExp
+      classes = selectorStr.match classExp
+
+      attrs.class = (klass.substr(1) for klass in classes).join(" ") if classes
+      attrs.id = id[0].substr(1) if id
+
+      userDefinedAttrs = false
+
+      for arg in args
+        if typeof arg is "object"
+          userDefinedAttrs = true
+          arg.id = attrs.id
+          arg.class = attrs.class
+
+      args.push attrs unless userDefinedAttrs
 
 jQuery.fn.view = -> this.data('view')
 
