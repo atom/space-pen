@@ -114,7 +114,7 @@ class Builder
   openTag: (name, attributes) ->
     attributePairs =
       for attributeName, value of attributes
-        "#{attributeName}=\"#{value}\""
+        "#{attributeName}='#{value}'"
 
     attributesString =
       if attributePairs.length
