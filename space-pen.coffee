@@ -22,8 +22,10 @@ idCounter = 0
 class View extends jQuery
   @builderStack: []
 
-  elements.forEach (tagName) ->
-    View[tagName] = (args...) -> @currentBuilder.tag(tagName, args...)
+  for tagName in elements
+    View[tagName] = do ->
+      _tagName = tagName
+      (args...) -> @currentBuilder.tag(_tagName, args...)
 
   @subview: (name, view) ->
     @currentBuilder.subview(name, view)
