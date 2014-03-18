@@ -227,13 +227,7 @@ class Builder
 
     attributePairs =
       for attributeName, value of attributes
-        if attributeName is "data"
-          dataAttributes =
-            for dataAttribute, dataValue of value
-              "data-#{dataAttribute}=\"#{dataValue}\""
-          dataAttributes.join(" ")
-        else
-          "#{attributeName}=\"#{value}\""
+        @attributePair attributeName, value
 
     attributesString =
       if attributePairs.length
@@ -242,6 +236,16 @@ class Builder
         ""
 
     @document.push "<#{name}#{attributesString}>"
+
+  attributePair: (attributeName, value, prefix) ->
+    attributeName = "#{prefix}-#{attributeName}" if prefix?
+    if typeof(value) is 'object'
+      nestedAttributes =
+        for nestedAttribute, nestedValue of value
+          @attributePair(nestedAttribute, nestedValue, attributeName)
+      nestedAttributes.join(" ")
+    else
+      "#{attributeName}=\"#{value}\""
 
   closeTag: (name) ->
     @document.push "</#{name}>"

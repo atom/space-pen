@@ -25,7 +25,7 @@ describe "View", ->
         @list: ->
           @ol =>
             @li outlet: 'li1', click: 'li1Clicked', data: {first: "yes", date: "today"}, class: 'foo', "one"
-            @li outlet: 'li2', keypress:'li2Keypressed', class: 'bar', "two"
+            @li outlet: 'li2', keypress:'li2Keypressed', data: {foo: {first: "yes", date: "today"}, bar: false}, class: 'bar', "two"
 
         initialize: (args...) ->
           @initializeCalledWith = args
@@ -70,6 +70,11 @@ describe "View", ->
       it "decomposes a data object into many data attributes", ->
         expect(view.li1.data('first')).toBe 'yes'
         expect(view.li1.data('date')).toBe 'today'
+
+      it "decomposes a nested objects into many prefixed attributes", ->
+        expect(view.li2.data('foo-first')).toBe 'yes'
+        expect(view.li2.data('foo-date')).toBe 'today'
+        expect(view.li2.data('bar')).toBe false
 
       it "binds events for elements with event name attributes", ->
         spyOn(view, 'viewClicked').andCallFake (event, elt) ->
