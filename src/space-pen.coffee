@@ -227,7 +227,13 @@ class Builder
 
     attributePairs =
       for attributeName, value of attributes
-        "#{attributeName}=\"#{value}\""
+        if attributeName is "data"
+          dataAttributes =
+            for dataAttribute, dataValue of value
+              "data-#{dataAttribute}=\"#{dataValue}\""
+          dataAttributes.join(" ")
+        else
+          "#{attributeName}=\"#{value}\""
 
     attributesString =
       if attributePairs.length
