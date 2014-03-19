@@ -225,9 +225,15 @@ class Builder
       attributes ?= {}
       attributes.is ?= registerElement(name)
 
+    if attributes?.data?
+      dataAttributes = " #{@dataAttribute 'data', attributes.data}"
+      delete attributes.data
+    else
+      dataAttributes = ""
+
     attributePairs =
       for attributeName, value of attributes
-        @attributePair attributeName, value
+        "#{attributeName}=\"#{value}\""
 
     attributesString =
       if attributePairs.length
@@ -235,14 +241,14 @@ class Builder
       else
         ""
 
-    @document.push "<#{name}#{attributesString}>"
+    @document.push "<#{name}#{attributesString}#{dataAttributes}>"
 
-  attributePair: (attributeName, value, prefix) ->
+  dataAttribute: (attributeName, value, prefix) ->
     attributeName = "#{prefix}-#{attributeName}" if prefix?
     if typeof(value) is 'object'
       nestedAttributes =
         for nestedAttribute, nestedValue of value
-          @attributePair(nestedAttribute, nestedValue, attributeName)
+          @dataAttribute(nestedAttribute, nestedValue, attributeName)
       nestedAttributes.join(" ")
     else
       "#{attributeName}=\"#{value}\""
