@@ -255,11 +255,12 @@ class Builder
 
   subview: (outletName, subview) ->
     subviewId = "subview-#{++idCounter}"
-    @tag 'div', id: subviewId
+    subviewTagName = subview[0].nodeName
+    @tag subviewTagName, id: subviewId
     @postProcessingSteps.push (view) ->
       view[outletName] = subview
       subview.parentView = view
-      view.find("div##{subviewId}").replaceWith(subview)
+      view.find("#{subviewTagName}##{subviewId}").replaceWith(subview)
 
   extractOptions: (args) ->
     options = {}

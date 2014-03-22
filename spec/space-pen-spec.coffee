@@ -67,6 +67,26 @@ describe "View", ->
         expect(view.header).toMatchSelector "h1"
         expect(view.subview.header).toMatchSelector "h2"
 
+      it "inserts subviews with tr on the proper position", ->
+        class RowView extends View
+          @content: (row) ->
+            @tr =>
+              @td row[0]
+
+        class TableView extends View
+          @content: (rows) ->
+            @table =>
+              @thead =>
+                @th "header 1"
+              @tbody =>
+                for row, index in rows
+                  @subview "row_#{index}", new RowView(row)
+
+        table_view = new TableView([["1"], ["2"]])
+        expect(table_view.row_0).toMatchSelector "tr"
+        expect(table_view.row_1).toMatchSelector "tr"
+        expect(table_view.row_0.parent()).toMatchSelector "tbody"
+
       it "binds events for elements with event name attributes", ->
         spyOn(view, 'viewClicked').andCallFake (event, elt) ->
           expect(event.type).toBe 'keydown'
