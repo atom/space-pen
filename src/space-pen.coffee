@@ -27,9 +27,14 @@ Events =
 
 # Use native matchesSelector if available, otherwise fall back
 # on jQuery.is (slower, but compatible)
-docEl = document.documentElement
-matches = docEl.matchesSelector || docEl.mozMatchesSelector || docEl.webkitMatchesSelector || docEl.oMatchesSelector || docEl.msMatchesSelector
-matchesSelector = if matches then ((elem, selector) -> matches.call(elem[0], selector)) else ((elem, selector) -> elem.is(selector))
+matchesSelector = do (docEl = document.documentElement) ->
+  nativeMatchesSelector = docEl.matchesSelector ||
+    docEl.webkitMatchesSelector || docEl.mozMatchesSelector ||
+    docEl.oMatchesSelector      || docEl.msMatchesSelector
+  if nativeMatchesSelector?
+    (elem, selector) -> nativeMatchesSelector.call(elem[0], selector)
+  else
+    (elem, selector) -> elem.is(selector)
 
 idCounter = 0
 
