@@ -26,6 +26,7 @@ describe "View", ->
           @ol =>
             @li outlet: 'li1', click: 'li1Clicked', class: 'foo', "one"
             @li outlet: 'li2', keypress:'li2Keypressed', class: 'bar', "two"
+            @li outlet: 'li3', dataCustomAttribute:'dasherize me'
 
         initialize: (args...) ->
           @initializeCalledWith = args
@@ -47,6 +48,10 @@ describe "View", ->
 
       it "calls initialize on the view with the given params", ->
         expect(view.initializeCalledWith).toEqual([{title: "Zebra"}, 42])
+
+      it "dasherizes camelCased attributes", ->
+        expect(view.li3.attr('dataCustomAttribute')).toBeUndefined()
+        expect(view.li3.attr('data-custom-attribute')).toEqual('dasherize me')
 
       it "wires outlet referenecs to elements with 'outlet' attributes", ->
         expect(view.li1).toMatchSelector "li.foo:contains(one)"
