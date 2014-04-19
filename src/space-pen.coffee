@@ -1,7 +1,9 @@
 if typeof require is 'function'
   $ = jQuery = require('./jquery-extensions')
+  _ = require 'underscore-plus'
 else
   $ = jQuery = window.jQuery
+  _ = window._
 
 Tags =
   'a abbr address article aside audio b bdi bdo blockquote body button
@@ -197,7 +199,7 @@ class Builder
   openTag: (name, attributes) ->
     attributePairs =
       for attributeName, value of attributes
-        "#{attributeName}=\"#{value}\""
+        "#{_.dasherize attributeName}=\"#{value}\""
 
     attributesString =
       if attributePairs.length
