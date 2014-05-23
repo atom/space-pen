@@ -41,8 +41,8 @@ describe 'jQuery extensions', ->
   describe "$.fn.events() and $.fn.document(...)", ->
     it "returns a list of all events being listened for on the target node or its ancestors, along with their documentation string", ->
       view = $$ ->
-        @div id: 'a', =>
-          @div id: 'b', =>
+        @div id: 'a', ->
+          @div id: 'b', ->
             @div id: 'c'
           @div id: 'd'
 
@@ -76,7 +76,7 @@ describe 'jQuery extensions', ->
 
     beforeEach ->
       view = $$ ->
-        @div class: 'a', =>
+        @div class: 'a', ->
           @div class: 'b'
           @div class: 'c'
       handler = jasmine.createSpy("commandHandler")
@@ -118,7 +118,7 @@ describe 'jQuery extensions', ->
 
   describe "$.fn.scrollUp/Down/ToTop/ToBottom", ->
     it "scrolls the element in the specified way if possible", ->
-      view = $$ -> @div => _.times 20, => @div('A')
+      view = $$ -> @div -> _.times 20, => @div('A')
       view.css(height: 100, width: 100, overflow: 'scroll')
       view.appendTo($('#jasmine-content'))
 
@@ -175,7 +175,7 @@ describe 'jQuery extensions', ->
     describe "$.fn.hasFocus()", ->
       it "returns true if the element is focused or contains an element that is focused", ->
         $('#jasmine-content').append $$ ->
-          @div id: 'parent', tabindex: -1, =>
+          @div id: 'parent', tabindex: -1, ->
             @div id: 'child', tabindex: -1
         parent = $('#parent')
         child = $('#child')
@@ -197,12 +197,12 @@ describe 'jQuery extensions', ->
 
     class ChildView extends View
       @content: ->
-        @div class: 'child', =>
+        @div class: 'child', ->
           @subview 'grandchild', new GrandchildView
 
     class ParentView extends View
       @content: ->
-        @div class: 'parent', =>
+        @div class: 'parent', ->
           @subview 'child', new ChildView
 
     [parentView, event] = []
