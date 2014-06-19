@@ -60,17 +60,17 @@ class View extends jQuery
   @builderStack: null
 
   Tags.forEach (tagName) ->
-    View[tagName] = (args...) -> @currentBuilder.tag(tagName, args...)
+    View[tagName] = (args...) -> @currentBuilder.tag(@, tagName, args...)
 
   # Public: Add the given subview wired to an outlet with the given name
   @subview: (name, view) ->
-    @currentBuilder.subview(name, view)
+    @currentBuilder.subview(@, name, view)
 
   # Public: Add a text node with the given text content
   @text: (string) -> @currentBuilder.text(string)
 
   # Public: Add a new tag with the given name
-  @tag: (tagName, args...) -> @currentBuilder.tag(tagName, args...)
+  @tag: (tagName, args...) -> @currentBuilder.tag(@, tagName, args...)
 
   # Public: Add new child DOM nodes from the given raw HTML string.
   @raw: (string) -> @currentBuilder.raw(string)
@@ -183,7 +183,7 @@ class Builder
   buildHtml: ->
     [@document.join(''), @postProcessingSteps]
 
-  tag: (name, args...) ->
+  tag: (context, name, args...) ->
     options = @extractOptions(args)
 
     @openTag(name, options.attributes)
@@ -192,7 +192,7 @@ class Builder
       if options.text? or options.content?
         throw new Error("Self-closing tag #{name} cannot have text or content")
     else
-      options.content?()
+      options.content?.call context
       @text(options.text) if options.text
       @closeTag(name)
 
@@ -225,9 +225,9 @@ class Builder
   raw: (string) ->
     @document.push string
 
-  subview: (outletName, subview) ->
+  subview: (context, outletName, subview) ->
     subviewId = "subview-#{++idCounter}"
-    @tag 'div', id: subviewId
+    @tag context, 'div', id: subviewId
     @postProcessingSteps.push (view) ->
       view[outletName] = subview
       subview.parentView = view

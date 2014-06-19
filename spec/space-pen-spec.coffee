@@ -7,7 +7,7 @@ describe "View", ->
     beforeEach ->
       class Subview extends View
         @content: (params={}, otherArg) ->
-          @div =>
+          @div ->
             @h2 { outlet: "header" }, params.title + " " + otherArg
             @div "I am a subview"
             @tag 'mytag', id: 'thetag', 'Non standard tag'
@@ -17,13 +17,13 @@ describe "View", ->
 
       class TestView extends View
         @content: (params={}, otherArg) ->
-          @div keydown: 'viewClicked', class: 'rootDiv', =>
+          @div keydown: 'viewClicked', class: 'rootDiv', ->
             @h1 { outlet: 'header' }, params.title + " " + otherArg
             @list()
             @subview 'subview', new Subview(title: "Subview", 43)
 
         @list: ->
-          @ol =>
+          @ol ->
             @li outlet: 'li1', click: 'li1Clicked', class: 'foo', "one"
             @li outlet: 'li2', keypress:'li2Keypressed', class: 'bar', "two"
 
@@ -116,7 +116,7 @@ describe "View", ->
       it "throws an exception if the view has a self closing tag with text", ->
         BadView = class extends View
           @content: ->
-            @div =>
+            @div ->
               @img 'text'
 
         expect(-> new BadView).toThrow("Self-closing tag img cannot have text or content")
@@ -227,8 +227,8 @@ describe "View", ->
   describe "View.render (bound to $$)", ->
     it "renders a document fragment based on tag methods called by the given function", ->
       fragment = $$ ->
-        @div class: "foo", =>
-          @ol =>
+        @div class: "foo", ->
+          @ol ->
             @li id: 'one'
             @li id: 'two'
 
@@ -239,7 +239,7 @@ describe "View", ->
 
     it "renders subviews", ->
       fragment = $$ ->
-        @div =>
+        @div ->
           @subview 'foo', $$ ->
             @div id: "subview"
 
@@ -249,8 +249,8 @@ describe "View", ->
   describe "$$$", ->
     it "returns the raw HTML constructed by tag methods called by the given function (not a jQuery wrapper)", ->
       html = $$$ ->
-        @div class: "foo", =>
-          @ol =>
+        @div class: "foo", ->
+          @ol ->
             @li id: 'one'
             @li id: 'two'
 
