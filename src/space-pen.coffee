@@ -118,9 +118,7 @@ class View extends jQuery
 
   @render: (fn) ->
     [html, postProcessingSteps] = @buildHtml(fn)
-    div = document.createElement('div')
-    div.innerHTML = html
-    fragment = $(div.childNodes)
+    fragment = $(html)
     step(fragment) for step in postProcessingSteps
     fragment
 

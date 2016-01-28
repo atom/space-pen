@@ -184,6 +184,21 @@ describe "View", ->
       expect(fragment.find('div#subview')).toExist()
       expect(fragment.foo).toMatchSelector('#subview')
 
+    it "renders table elements", ->
+      tr    = $$ -> @tr()
+      td    = $$ -> @td()
+      tfoot = $$ -> @tfoot()
+      thead = $$ -> @thead()
+      tbody = $$ -> @tbody()
+      col   = $$ -> @col()
+
+      expect(tr).toMatchSelector('tr')
+      expect(td).toMatchSelector('td')
+      expect(tfoot).toMatchSelector('tfoot')
+      expect(thead).toMatchSelector('thead')
+      expect(tbody).toMatchSelector('tbody')
+      expect(col).toMatchSelector('col')
+
   describe "$$$", ->
     it "returns the raw HTML constructed by tag methods called by the given function (not a jQuery wrapper)", ->
       html = $$$ ->
