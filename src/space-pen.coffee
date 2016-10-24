@@ -347,13 +347,13 @@ $.fn.isHidden = ->
     getComputedStyle(this[0]).display == 'none'
 
 $.fn.isDisabled = ->
-  !!@attr('disabled')
+  Boolean(@prop('disabled'))
 
 $.fn.enable = ->
-  @removeAttr('disabled')
+  @prop('disabled', false)
 
 $.fn.disable = ->
-  @attr('disabled', 'disabled')
+  @prop('disabled', true)
 
 $.fn.insertAt = (index, element) ->
   target = @children(":eq(#{index})")
